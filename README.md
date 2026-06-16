@@ -1,147 +1,166 @@
-# MikroTik Hotspot Voucher Infrastructure
+# Infrastruktur Hotspot Voucher MikroTik
 
-A professional small-scale hotspot infrastructure project built using MikroTik devices with a separated Core Router and Dedicated Hotspot Router architecture.
+![Status](https://img.shields.io/badge/Status-Berjalan-success)
+![MikroTik](https://img.shields.io/badge/Platform-MikroTik-blue)
+![Versi](https://img.shields.io/badge/Versi-1.0-orange)
 
-This project demonstrates how to build a scalable WiFi voucher system using MikroTik RB760iGS as the core router and MikroTik RB951Ui-2HnD as the hotspot gateway.
+## Tentang Proyek
 
----
+Proyek ini merupakan implementasi jaringan hotspot voucher menggunakan dua perangkat MikroTik dengan konsep pemisahan tugas antara **Core Router** dan **Hotspot Router**.
 
-# Project Objectives
+Arsitektur ini dibuat agar pengelolaan jaringan menjadi lebih rapi, mudah dikembangkan, serta mendekati implementasi jaringan yang digunakan pada lingkungan profesional.
 
-This project was created to simulate a real-world hotspot deployment for environments such as:
+Pada proyek ini, **MikroTik RB760iGS** bertugas sebagai router utama yang menangani koneksi internet, routing, NAT, serta jaringan management.
 
-- Coffee Shops
-- Small Businesses
-- Tourism Areas
-- Farms and Outdoor Areas
-- Guest Houses
-- Small Community Networks
-
-The main objective is to separate routing functions from hotspot services to make the network easier to manage, secure, and scale.
+Sedangkan **MikroTik RB951Ui-2HnD** difokuskan sebagai perangkat hotspot yang menangani jaringan pengguna, WiFi, captive portal, autentikasi voucher, dan pembatasan bandwidth.
 
 ---
 
-# Network Architecture
+## Tujuan Proyek
+
+Proyek ini dibuat sebagai pembelajaran sekaligus simulasi implementasi hotspot pada skala kecil hingga menengah seperti:
+
+- Area wisata
+- Kebun atau lokasi outdoor
+- Warung kopi
+- Kafe
+- Guest house
+- UMKM
+- Jaringan komunitas kecil
+
+Beberapa tujuan utama dari proyek ini:
+
+- Membangun arsitektur hotspot yang terpisah antara layanan inti dan layanan pengguna.
+- Menerapkan sistem login menggunakan voucher hotspot MikroTik.
+- Membatasi kecepatan internet setiap pengguna.
+- Membatasi satu voucher untuk satu perangkat.
+- Menyediakan dasar pengembangan untuk VLAN, monitoring, website internal, dan sistem manajemen voucher.
+
+---
+
+## Topologi Jaringan
 
 ```
-                           Internet
-                               |
-                               |
-                     IndiHome ONT / Modem
-                        192.168.100.1
-                               |
-                               |
-                        ether1 (WAN)
-                         RB760iGS
-                       Core Router
-                    192.168.100.144
-                               |
-                    Management Network
-                        172.20.1.0/24
-                               |
-                  ether5 (PoE Out to RB951)
-                               |
-                        ether1 (UPLINK)
-                       RB951Ui-2HnD
-                    Hotspot Router / AP
-                      Management IP
-                        172.20.1.2
-                               |
-               --------------------------------
-               |                              |
-           LAN Ports                      WLAN 2.4 GHz
-                                               |
-                                       KEBON-HOTSPOT
-                                               |
-                                       172.20.10.0/24
-                                               |
-                                         WiFi Clients
+                      INTERNET
+                          |
+                          |
+                 Modem / ONT IndiHome
+                   192.168.100.1
+                          |
+                          |
+                    ether1 (WAN)
+                          |
+                    MikroTik RB760iGS
+                      Core Router
+                 WAN : 192.168.100.x
+                 LAN : 172.20.1.1/24
+                          |
+                  ether5 (PoE Out)
+                          |
+                    ether1 (UPLINK)
+                          |
+                 MikroTik RB951Ui-2HnD
+                    Hotspot Router
+                 Management : 172.20.1.2
+                          |
+            --------------------------------
+            |                              |
+         LAN Client                    WLAN 2.4 GHz
+                                          |
+                                    KEBON-HOTSPOT
+                                          |
+                                   172.20.10.0/24
+                                          |
+                                   Pengguna Hotspot
 ```
 
 ---
 
-# Network Addressing Plan
+## Perencanaan Alamat IP
 
-## WAN Network
+### Jaringan Internet (WAN)
 
-| Device | Address |
+| Perangkat | Alamat |
 |---|---|
-| ISP Modem | 192.168.100.1 |
+| Modem IndiHome | 192.168.100.1 |
 | RB760 WAN | DHCP Client (192.168.100.x) |
 
 ---
 
-## Management Network
+### Jaringan Management
 
-| Device | Address | Function |
-|---|---|---|
-| RB760iGS | 172.20.1.1 | Core Router |
-| RB951Ui-2HnD | 172.20.1.2 | Hotspot Management |
+Jaringan ini digunakan untuk mengakses dan mengelola perangkat jaringan.
+
+| Perangkat | Alamat IP |
+|---|---|
+| RB760iGS | 172.20.1.1 |
+| RB951Ui-2HnD | 172.20.1.2 |
 
 ---
 
-## Hotspot Network
+### Jaringan Hotspot
 
-| Network | Description |
+Jaringan yang digunakan oleh pengguna WiFi.
+
+| Parameter | Nilai |
 |---|---|
-| 172.20.10.0/24 | Hotspot User Network |
+| Network | 172.20.10.0/24 |
 | Gateway | 172.20.10.1 |
 | DHCP Pool | 172.20.10.100 - 172.20.10.254 |
+| SSID | KEBON-HOTSPOT |
 
 ---
 
-# Hardware Used
+## Perangkat yang Digunakan
 
-| Device | Role |
+| Perangkat | Fungsi |
 |---|---|
 | MikroTik RB760iGS | Core Router |
-| MikroTik RB951Ui-2HnD | Hotspot Router & Access Point |
-| IndiHome ONT | Internet Source |
+| MikroTik RB951Ui-2HnD | Router Hotspot dan Access Point |
+| Modem/ONT ISP | Sumber koneksi internet |
+| Laptop | Konfigurasi dan monitoring |
+| Smartphone/Client | Pengujian hotspot |
 
 ---
 
-# Implemented Features
+## Fitur yang Sudah Berjalan
 
-Current implementation:
+### RB760iGS (Core Router)
 
-## RB760iGS
+- [x] Koneksi internet melalui DHCP Client
+- [x] Routing jaringan
+- [x] NAT Masquerade
+- [x] DNS Forwarding
+- [x] Jaringan management
+- [x] PoE Out untuk RB951
 
-- WAN DHCP Client
-- Internet Gateway
-- NAT Masquerade
-- DNS Forwarding
-- Management Network
-- PoE Out to RB951
+### RB951Ui-2HnD (Hotspot Router)
 
----
-
-## RB951Ui-2HnD
-
-- Dedicated Hotspot Gateway
-- Wireless Access Point
-- Captive Portal
-- DHCP Server for Hotspot Users
-- User Authentication
-- Bandwidth Management
+- [x] Wireless Access Point
+- [x] SSID KEBON-HOTSPOT
+- [x] DHCP Server untuk pengguna hotspot
+- [x] Captive Portal MikroTik
+- [x] Sistem login voucher
+- [x] Pembatasan bandwidth per pengguna
 
 ---
 
-## Hotspot Policy
+## Kebijakan Hotspot Saat Ini
 
-Current hotspot policy:
+Konfigurasi voucher yang digunakan saat ini:
 
-| Parameter | Value |
+| Parameter | Konfigurasi |
 |---|---|
-| SSID | KEBON-HOTSPOT |
-| Voucher Type | Daily |
-| Bandwidth | 2 Mbps Upload / 2 Mbps Download |
-| Shared User | 1 Device |
-| Authentication | Username & Password |
-| Captive Portal | Enabled |
+| Jenis Voucher | Harian |
+| Durasi | 1 hari |
+| Kecepatan | 2 Mbps Upload / 2 Mbps Download |
+| Jumlah Perangkat | 1 perangkat per voucher |
+| Sistem Login | Username dan password |
+| Captive Portal | Aktif |
 
 ---
 
-# Repository Structure
+## Struktur Repository
 
 ```
 mikrotik-hotspot-voucher/
@@ -149,15 +168,15 @@ mikrotik-hotspot-voucher/
 ├── README.md
 │
 ├── docs/
-│   ├── 01-project-overview.md
-│   ├── 02-network-topology.md
-│   ├── 03-ip-addressing-plan.md
-│   ├── 04-rb760-core-router-configuration.md
-│   ├── 05-rb951-hotspot-router-configuration.md
-│   ├── 06-hotspot-voucher-configuration.md
-│   ├── 07-security-hardening.md
+│   ├── 01-gambaran-proyek.md
+│   ├── 02-topologi-jaringan.md
+│   ├── 03-perencanaan-ip-address.md
+│   ├── 04-konfigurasi-rb760-core-router.md
+│   ├── 05-konfigurasi-rb951-hotspot-router.md
+│   ├── 06-konfigurasi-voucher-hotspot.md
+│   ├── 07-keamanan-jaringan.md
 │   ├── 08-troubleshooting.md
-│   └── 09-future-development.md
+│   └── 09-pengembangan-selanjutnya.md
 │
 ├── scripts/
 │   ├── rb760-core.rsc
@@ -168,64 +187,63 @@ mikrotik-hotspot-voucher/
 │   └── RB951-HOTSPOT.backup
 │
 └── assets/
-    ├── topology/
-    ├── screenshots/
-    └── hotspot-login/
+    ├── topologi/
+    ├── screenshot-winbox/
+    └── halaman-hotspot/
 ```
 
 ---
 
-# Documentation Guide
+## Dokumentasi Konfigurasi
 
-Each documentation contains:
+Setiap tahapan konfigurasi pada folder `docs` akan menyediakan dua metode:
 
-- Network Objective
-- Network Design
-- Configuration using Winbox GUI
-- Configuration using MikroTik Terminal (CLI)
-- Verification Procedure
-- Troubleshooting
+### 1. Konfigurasi menggunakan Winbox
 
-This repository is designed not only as a configuration backup, but also as a learning resource for MikroTik network deployment.
+Berisi langkah konfigurasi menggunakan antarmuka grafis MikroTik.
 
----
+Cocok untuk:
+- Teknisi lapangan.
+- Pemula yang baru belajar MikroTik.
+- Dokumentasi visual.
 
-# Current Status
+### 2. Konfigurasi menggunakan Terminal (CLI)
 
-| Feature | Status |
-|---|---|
-| Core Router Configuration | ✅ Completed |
-| Internet Access | ✅ Completed |
-| Management Network | ✅ Completed |
-| RB951 PoE Uplink | ✅ Completed |
-| Wireless Access Point | ✅ Completed |
-| Hotspot DHCP | ✅ Completed |
-| Captive Portal | ✅ Completed |
-| Voucher Authentication | ✅ Completed |
-| 2 Mbps User Limit | ✅ Completed |
-| Single Device Login | ✅ Completed |
-| Firewall Hardening | 🔄 Planned |
-| Mikhmon Integration | 🔄 Planned |
-| Website Integration | 🔄 Planned |
-| VLAN Segmentation | 🔄 Future |
+Berisi perintah MikroTik RouterOS secara langsung.
+
+Cocok untuk:
+- Network Engineer.
+- Deployment cepat.
+- Pembuatan script `.rsc`.
 
 ---
 
-# Future Development
+## Status Pengembangan
 
-This project will continue to evolve with:
+### Versi 1.0 (Selesai)
 
-- Advanced Firewall Policy
-- Management Access Restriction
-- Mikhmon Integration
-- Automated Voucher Management
-- Internal Website Hosting
-- Port Forwarding
-- VLAN Implementation
-- Network Monitoring
+- Core Router RB760iGS.
+- Hotspot Router RB951Ui-2HnD.
+- Jaringan management.
+- WiFi hotspot.
+- Captive portal.
+- Voucher login.
+- Limit bandwidth 2 Mbps.
+
+### Pengembangan Berikutnya
+
+- Firewall hardening.
+- Pembatasan akses management.
+- Isolasi pengguna hotspot.
+- Integrasi Mikhmon.
+- Otomatisasi pembuatan voucher.
+- Hosting website internal.
+- Port forwarding.
+- Implementasi VLAN.
+- Monitoring jaringan.
 
 ---
 
-# License
+## Catatan
 
-This project is intended for learning, research, and small-scale network deployment references.
+Proyek ini akan terus dikembangkan sebagai dokumentasi pembelajaran dan implementasi jaringan berbasis MikroTik. Seluruh konfigurasi yang tersedia dapat digunakan sebagai referensi untuk membangun sistem hotspot voucher dengan arsitektur yang lebih terstruktur.
