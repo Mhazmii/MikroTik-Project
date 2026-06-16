@@ -29,3 +29,19 @@ Current implementation:
 ---
 
 ## Architecture
+Internet
+|
+IndiHome ONT
+192.168.100.1
+|
+RB760iGS (Core Router)
+WAN: 192.168.100.x
+LAN: 172.20.1.1/24
+|
+RB951Ui-2HnD
+Management: 172.20.1.2
+|
+WiFi KEBON-HOTSPOT
+Gateway: 172.20.10.1/24
+|
+Hotspot Users
