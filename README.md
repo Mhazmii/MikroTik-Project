@@ -45,3 +45,9 @@ WiFi KEBON-HOTSPOT
 Gateway: 172.20.10.1/24
 |
 Hotspot Users
+
+---
+
+## Documentation
+
+See the `docs` directory for detailed implementation steps.
