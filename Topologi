@@ -1,0 +1,33 @@
+                          INTERNET
+                              |
+                              |
+                      IndiHome Modem/ONT
+                      192.168.100.1/24
+                              |
+                              |
+                      WAN (ether1)
+                      RB760iGS
+                    CORE ROUTER
+               WAN IP: 192.168.100.144
+                              |
+                Management Network
+                     172.20.1.0/24
+                              |
+        ------------------------------------------------
+        |                                              |
+   Laptop Management                             ether5 PoE
+                                                |
+                                                |
+                                            ether1
+                                         RB951Ui-2HnD
+                                         HOTSPOT ROUTER
+                              Management IP: 172.20.1.2
+                                                |
+                           ----------------------------------
+                           |               |                |
+                       LAN Port         WiFi AP        Hotspot User
+                                       KEBON-HOTSPOT
+                                                |
+                                         172.20.10.0/24
+                                                |
+                                          Client Device
